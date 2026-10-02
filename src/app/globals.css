@@ -1,0 +1,227 @@
+@import "tailwindcss";
+
+/* ── Tokens ──────────────────────────────────────────────────────────
+   Light: cool paper and chalkboard green. Dark: the blackboard itself.
+   Pencil yellow is the single accent in both. */
+:root {
+  --bg: #f2f5f3;
+  --surface: #ffffff;
+  --surface-2: #e8eeea;
+  --ink: #12201c;
+  --muted: #55665f;
+  --line: #d3ddd7;
+  --brand: #14574a;
+  --brand-ink: #ffffff;
+  --brand-soft: #dbeae4;
+  --accent: #f2b632;
+  --accent-ink: #33250a;
+  --danger: #a8322b;
+  --board: #123f36;
+  --board-ink: #eaf3ef;
+  --shadow: 0 1px 2px rgb(18 32 28 / 0.06), 0 8px 24px -12px rgb(18 32 28 / 0.18);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1614;
+    --surface: #14201d;
+    --surface-2: #1b2a26;
+    --ink: #e7efeb;
+    --muted: #9bafa7;
+    --line: #2a3c36;
+    --brand: #5cc7a9;
+    --brand-ink: #06211a;
+    --brand-soft: #1d3a32;
+    --accent: #f5c451;
+    --accent-ink: #2b1f05;
+    --danger: #f0877e;
+    --board: #0a1210;
+    --board-ink: #e7efeb;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 28px -14px rgb(0 0 0 / 0.7);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1614;
+  --surface: #14201d;
+  --surface-2: #1b2a26;
+  --ink: #e7efeb;
+  --muted: #9bafa7;
+  --line: #2a3c36;
+  --brand: #5cc7a9;
+  --brand-ink: #06211a;
+  --brand-soft: #1d3a32;
+  --accent: #f5c451;
+  --accent-ink: #2b1f05;
+  --danger: #f0877e;
+  --board: #0a1210;
+  --board-ink: #e7efeb;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 28px -14px rgb(0 0 0 / 0.7);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-danger: var(--danger);
+  --color-board: var(--board);
+  --color-board-ink: var(--board-ink);
+  --font-sans: "IBM Plex Sans Arabic", system-ui, "Segoe UI", Tahoma, sans-serif;
+  --font-display: "Readex Pro Variable", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --shadow-soft: var(--shadow);
+}
+
+/* Cover colours for notebooks, sections and file types. */
+[data-color="green"] { --c: #1f6b5a; }
+[data-color="blue"] { --c: #2c5aa0; }
+[data-color="plum"] { --c: #74407a; }
+[data-color="coral"] { --c: #c04e3d; }
+[data-color="ochre"] { --c: #a86f1a; }
+[data-color="teal"] { --c: #1d7682; }
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+  h1, h2, h3 { font-family: var(--font-display); line-height: 1.25; text-wrap: balance; }
+  :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
+  button, [role="button"], a { -webkit-tap-highlight-color: transparent; }
+  button:not(:disabled) { cursor: pointer; }
+  ::selection { background: var(--accent); color: var(--accent-ink); }
+}
+
+@layer components {
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    min-height: 2.75rem; padding: 0 1.1rem; border-radius: 0.7rem;
+    font-weight: 600; font-size: 0.95rem; white-space: nowrap;
+    border: 1px solid transparent; transition: background-color 0.15s, border-color 0.15s, opacity 0.15s;
+  }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .btn-primary { background: var(--brand); color: var(--brand-ink); }
+  .btn-primary:hover:not(:disabled) { background: color-mix(in oklab, var(--brand) 88%, var(--ink)); }
+  .btn-accent { background: var(--accent); color: var(--accent-ink); }
+  .btn-accent:hover:not(:disabled) { background: color-mix(in oklab, var(--accent) 90%, var(--ink)); }
+  .btn-outline { border-color: var(--line); background: var(--surface); color: var(--ink); }
+  .btn-outline:hover:not(:disabled) { border-color: var(--muted); }
+  .btn-ghost { color: var(--ink); }
+  .btn-ghost:hover:not(:disabled) { background: var(--surface-2); }
+  .btn-danger { background: var(--danger); color: var(--surface); }
+  .btn-sm { min-height: 2.25rem; padding: 0 0.8rem; font-size: 0.875rem; border-radius: 0.6rem; }
+  .btn-icon { width: 2.75rem; padding: 0; }
+
+  .input {
+    width: 100%; min-height: 2.75rem; padding: 0.55rem 0.85rem; border-radius: 0.7rem;
+    background: var(--surface); color: var(--ink); border: 1px solid var(--line); font-size: 1rem;
+  }
+  .input::placeholder { color: color-mix(in oklab, var(--muted) 75%, transparent); }
+  .input:hover { border-color: var(--muted); }
+  .input:focus { outline: 2px solid var(--brand); outline-offset: 0; border-color: transparent; }
+  .label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.35rem; }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 1rem; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.1rem 0.6rem; border-radius: 999px;
+    background: var(--surface-2); color: var(--muted); font-size: 0.8rem; line-height: 1.6;
+  }
+
+  /* The notebook: a class is drawn as a school copybook with a spine and a name label. */
+  .notebook {
+    position: relative; display: flex; flex-direction: column; justify-content: space-between;
+    border-radius: 0.5rem 1rem 1rem 0.5rem; background: var(--c); color: #fff; overflow: hidden;
+    box-shadow: var(--shadow); isolation: isolate;
+  }
+  [dir="rtl"] .notebook { border-radius: 1rem 0.5rem 0.5rem 1rem; }
+  .notebook::before {
+    content: ""; position: absolute; inset-block: 0; inset-inline-start: 0; width: 1.15rem; z-index: -1;
+    background:
+      radial-gradient(circle at 50% 50%, rgb(255 255 255 / 0.55) 1.5px, transparent 2px) 0 0 / 100% 14px,
+      rgb(0 0 0 / 0.22);
+  }
+  .notebook-label {
+    background: #fbfcfa; color: #12201c; border-radius: 0.35rem; padding: 0.55rem 0.75rem;
+    background-image: repeating-linear-gradient(transparent 0 1.5rem, rgb(18 32 28 / 0.1) 1.5rem calc(1.5rem + 1px));
+    box-shadow: 0 1px 0 rgb(0 0 0 / 0.15);
+  }
+
+  /* Lined paper for notes and document covers. */
+  .paper {
+    background-color: #fbfcfa; color: #12201c;
+    background-image: repeating-linear-gradient(transparent 0 1.35rem, rgb(44 90 160 / 0.16) 1.35rem calc(1.35rem + 1px));
+  }
+
+  .prose-chat { font-size: 0.95rem; line-height: 1.75; overflow-wrap: anywhere; }
+  .prose-chat > * + * { margin-top: 0.7em; }
+  .prose-chat h1, .prose-chat h2, .prose-chat h3 { font-size: 1.05rem; font-weight: 700; margin-top: 1.1em; }
+  .prose-chat ul { list-style: disc; padding-inline-start: 1.25rem; }
+  .prose-chat ol { list-style: decimal; padding-inline-start: 1.25rem; }
+  .prose-chat table { display: block; overflow-x: auto; border-collapse: collapse; font-size: 0.875rem; }
+  .prose-chat th, .prose-chat td { border: 1px solid var(--line); padding: 0.35rem 0.6rem; text-align: start; }
+  .prose-chat code { background: var(--surface-2); padding: 0.1rem 0.3rem; border-radius: 0.3rem; font-size: 0.85em; }
+  .prose-chat a { color: var(--brand); text-decoration: underline; }
+}
+
+/* ── Hero scene: loose files settle into an ordered workspace, once, on load ── */
+@keyframes settle {
+  from { transform: translate(var(--fx), var(--fy)) rotate(var(--fr)); opacity: 0; }
+  35% { opacity: 1; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes rise {
+  from { transform: translateY(1.25rem); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes chalk {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+[dir="rtl"] .chalk-line { animation-name: chalk-rtl; }
+@keyframes chalk-rtl {
+  from { clip-path: inset(0 0 0 100%); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes drift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+.scene-file { animation: settle 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: calc(0.5s + var(--i) * 0.12s); }
+.scene-book { animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both, drift 7s ease-in-out infinite; animation-delay: calc(var(--i) * 0.1s), calc(2.4s + var(--i) * 0.6s); }
+.chalk-line { animation: chalk 1.2s ease-out both; animation-delay: 1.6s; }
+
+@keyframes pop-in {
+  from { transform: translateY(0.5rem) scale(0.98); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.pop-in { animation: pop-in 0.18s ease-out both; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 0.8s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+
+.toasts {
+  position: fixed; inset: auto 0 6rem 0; margin: 0 auto; width: fit-content; max-width: calc(100vw - 2rem);
+  border: 0; padding: 0; background: transparent; color: inherit; overflow: visible;
+}
+.toasts:popover-open, .toasts:not([popover]) { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+@media (min-width: 64rem) { .toasts { bottom: 2rem; } }
+
+dialog::backdrop { background: rgb(8 16 14 / 0.55); }
+dialog { color: inherit; }
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }

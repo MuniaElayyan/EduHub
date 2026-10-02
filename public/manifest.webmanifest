@@ -1,0 +1,14 @@
+{
+  "name": "EduHub",
+  "short_name": "EduHub",
+  "description": "The teacher's digital workspace",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f2f5f3",
+  "theme_color": "#14574a",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

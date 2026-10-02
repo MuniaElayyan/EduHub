@@ -1,0 +1,633 @@
+{
+  "common": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete",
+    "back": "Back",
+    "next": "Next",
+    "loading": "Loading…",
+    "optional": "optional",
+    "language": "Language",
+    "theme": "Theme",
+    "open": "Open",
+    "more": "More",
+    "all": "All",
+    "copy": "Copy",
+    "skipToContent": "Skip to content"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "nav": {
+    "home": "Home",
+    "favorites": "Favorites",
+    "recent": "Recently used",
+    "trash": "Trash",
+    "settings": "Settings",
+    "myClasses": "My classes",
+    "search": "Search",
+    "menu": "Menu",
+    "logout": "Log out",
+    "profileMenu": "Account menu",
+    "myResources": "My resources"
+  },
+  "grades": {
+    "1": "Grade 1",
+    "2": "Grade 2",
+    "3": "Grade 3",
+    "4": "Grade 4",
+    "5": "Grade 5",
+    "6": "Grade 6",
+    "7": "Grade 7",
+    "8": "Grade 8",
+    "9": "Grade 9",
+    "10": "Grade 10",
+    "11": "Grade 11",
+    "12": "Grade 12"
+  },
+  "sections": {
+    "videos": "Videos",
+    "presentations": "Presentations",
+    "posters": "Posters",
+    "lesson_plans": "Lesson Plans",
+    "worksheets": "Worksheets",
+    "pdfs": "PDFs",
+    "images": "Images",
+    "links": "Links",
+    "other": "Other Resources",
+    "files": "Files"
+  },
+  "types": {
+    "pdf": "PDF",
+    "presentation": "Presentation",
+    "document": "Document",
+    "spreadsheet": "Spreadsheet",
+    "image": "Image",
+    "video": "Video",
+    "link": "Link",
+    "note": "Note"
+  },
+  "colors": {
+    "green": "Green",
+    "blue": "Blue",
+    "plum": "Plum",
+    "coral": "Coral",
+    "ochre": "Ochre",
+    "teal": "Teal"
+  },
+  "errors": {
+    "network": "Could not reach the server. Check your connection and try again.",
+    "server_error": "The server ran into a problem. Try again in a moment.",
+    "invalid_input": "Some fields are missing or not valid. Check them and try again.",
+    "invalid_credentials": "The email or password is not correct.",
+    "email_taken": "An account with this email already exists. Log in or reset your password.",
+    "unauthenticated": "Your session has ended. Log in again.",
+    "email_not_verified": "Confirm your email address first.",
+    "too_many_requests": "Too many attempts in a short time. Wait a little and try again.",
+    "file_too_large": "The file is larger than the allowed size.",
+    "unsupported_file_type": "This file type is not supported, or the file's content does not match its extension.",
+    "quota_exceeded": "There is not enough storage left for this file. Delete files from the trash permanently to free space.",
+    "invalid_url": "The link is not valid. It must start with https:// or http://",
+    "not_found": "The item was not found.",
+    "ai_daily_limit": "You have reached today's assistant message limit. It resets within 24 hours.",
+    "ai_unavailable": "The assistant is not available right now. Try again in a moment.",
+    "bad_origin": "The request's origin could not be verified. Refresh the page and try again.",
+    "invalid_code": "The code is not correct. Check it and try again.",
+    "code_expired": "The code has expired. Send a new one.",
+    "code_cooldown": "Wait a moment before asking for a new code.",
+    "code_limit": "Too many codes requested. Try again in an hour.",
+    "email_failed": "The email could not be sent right now. Try \"Resend code\" in a moment.",
+    "national_id_taken": "This national ID number is registered to another account.",
+    "invalid_national_id": "The national ID number is not valid. Use digits only.",
+    "wrong_password": "The current password is not correct.",
+    "no_password": "This account logs in with Google and has no password.",
+    "account_suspended": "This account is suspended.",
+    "profile_incomplete": "Complete your teaching profile first.",
+    "already_complete": "Your profile is already complete.",
+    "course_exists": "You already have this class.",
+    "not_empty": "It cannot be deleted while it holds resources. Move or delete them first.",
+    "oauth_failed": "Google sign-in did not work. Try again, or log in with your email and password.",
+    "ai_not_configured": "The AI assistant is not switched on for this server yet.",
+    "storage_not_configured": "File storage is not set up on this server yet. Links work; file uploads are waiting for storage.",
+    "upload_failed": "The file could not be uploaded. Check your connection and try again."
+  },
+  "landing": {
+    "metaTitle": "The teacher's digital workspace",
+    "metaDescription": "A teacher's personal workspace: subjects, classes, units, resources and planning, with an assistant that knows what they teach.",
+    "navLabel": "Page sections",
+    "navWhy": "Why EduHub",
+    "navHow": "How it works",
+    "navAi": "AI assistant",
+    "navTrust": "Security",
+    "openWorkspace": "Open my workspace",
+    "start": "Get started",
+    "heroTitle": "Everything you need to run your teaching, in one place.",
+    "heroSubtitle": "EduHub is not a file folder. It is your workspace as a teacher: your subjects, classes, units, resources and planning, with an assistant that knows what you teach.",
+    "heroNote": "Works in Arabic and English, on computer, tablet and phone.",
+    "sceneTitle": "My teaching space",
+    "whatTitle": "Not Google Drive for teachers",
+    "whatBody": "A personal workspace that brings together teaching, organising materials, resources, planning, search and AI. Every subject has its classes, every class its two semesters, every semester its units, and every unit its videos, files, slides, plans and worksheets. Four clicks take you to anything.",
+    "whyTitle": "Why EduHub?",
+    "why": {
+      "organize": {
+        "title": "Organised materials",
+        "body": "Subject, grade, semester, unit, then resource sections. When you upload a file, EduHub suggests its place, and you decide."
+      },
+      "classes": {
+        "title": "Your own classes",
+        "body": "The workspace is built on your subjects and grades. Add a class, a unit or a section whenever you need one."
+      },
+      "quick": {
+        "title": "Search and quick access",
+        "body": "One search across all your subjects and units, plus favorites and recently used."
+      },
+      "ai": {
+        "title": "AI assistant",
+        "body": "Writes a lesson plan, a quiz or a worksheet, and knows the subject, grade and unit you are in."
+      },
+      "bilingual": {
+        "title": "Arabic and English",
+        "body": "The whole interface flips between right-to-left and left-to-right, not just the text."
+      },
+      "devices": {
+        "title": "Phone and computer",
+        "body": "The same experience on every screen, and installable as an app on your phone."
+      },
+      "planning": {
+        "title": "Planning",
+        "body": "Lesson plans and worksheets live in their unit, and what the assistant writes is reviewed and saved next to them."
+      }
+    },
+    "howTitle": "How it works",
+    "how": {
+      "1": {
+        "title": "Create your account",
+        "body": "Three short steps, then a verification code sent to your email."
+      },
+      "2": {
+        "title": "Pick your subjects and grades",
+        "body": "Your classes are created with their semesters and units."
+      },
+      "3": {
+        "title": "Organise your resources",
+        "body": "Upload files or paste links inside the unit and section."
+      },
+      "4": {
+        "title": "Start teaching",
+        "body": "Open what you need in class from any device."
+      }
+    },
+    "showTitle": "A workspace you understand at first glance",
+    "showBody": "After you log in you see your own subjects and classes, your quick actions and what you worked on last.",
+    "showHello": "Hello, Ahmad",
+    "aiTitle": "An assistant that knows your classes",
+    "aiBody": "Ask from any page. Inside a unit of Grade 6 it already knows that, and with a PDF in front of you it can answer questions about its content.",
+    "aiPoints": {
+      "1": "Lesson plans, quizzes, worksheets, flashcards and summaries.",
+      "2": "What it writes is a draft: preview it, edit it, then save it as a new note.",
+      "3": "It never changes or deletes your original files."
+    },
+    "aiDemoAsk": "Write a lesson plan on the Present Perfect",
+    "aiDemoAnswerTitle": "Lesson plan: Present Perfect, Grade 6",
+    "aiDemoAnswerBody": "Objectives, warm-up, presentation, guided practice, assessment and homework.",
+    "devicesTitle": "On all your devices",
+    "devicesBody": "Designed for the phone first, then scaled up. No sideways scrolling, no tiny buttons.",
+    "devices": {
+      "desktop": {
+        "title": "Computer",
+        "body": "Sidebar, drag and drop between sections, and a wide preview."
+      },
+      "tablet": {
+        "title": "Tablet",
+        "body": "Comfortable for presenting in class and for touch."
+      },
+      "mobile": {
+        "title": "Phone",
+        "body": "Bottom navigation and large buttons, installable as an app."
+      }
+    },
+    "trustTitle": "Security and trust",
+    "trustBody": "Your teaching and personal data deserve care. This is what the platform does today:",
+    "trust": {
+      "private": {
+        "title": "Your resources are yours",
+        "body": "Every resource is private by default, and only your account can open your files."
+      },
+      "passwords": {
+        "title": "Passwords are never stored as typed",
+        "body": "They are hashed with scrypt and nobody can view them. The national ID is stored encrypted and only its last four digits are shown."
+      },
+      "sessions": {
+        "title": "Control over devices",
+        "body": "Each device has its own session that you can see and close. \"Remember me\" applies only to the device you chose it on."
+      },
+      "trash": {
+        "title": "No accidental deletion",
+        "body": "What you delete goes to the trash and can be restored. Permanent deletion asks for confirmation."
+      },
+      "codes": {
+        "title": "Real verification codes",
+        "body": "Confirming your email, resetting your password and changing your email use a 6-digit code sent to your inbox, valid for minutes and for one use."
+      }
+    },
+    "finalTitle": "Start building your digital teaching space.",
+    "footerTagline": "One workspace for everything a teacher needs.",
+    "footerLabel": "Footer links",
+    "kicker": "Teacher Operating System"
+  },
+  "info": {
+    "about": {
+      "title": "About",
+      "body": "EduHub is a teacher's personal workspace. It keeps their subjects, classes, units and teaching resources in one place, with an AI assistant for preparation."
+    },
+    "contact": {
+      "title": "Contact",
+      "body": "To reach the organisation that runs this platform, use the contact published here."
+    },
+    "help": {
+      "title": "Help",
+      "body": "To start: create an account, then enter the code sent to your email.\n\nTo reach your resources: My classes, then the class, the semester, the unit, and the section.\n\nTo add a resource: open the section and press \"Add\", then choose a file or paste a link.\n\nTo move a resource: drag it to another section on a computer, or open it and choose \"Move\" on a phone."
+    },
+    "privacy": {
+      "title": "Privacy policy",
+      "body": "This page is waiting for the final text from the organisation that runs the platform."
+    },
+    "terms": {
+      "title": "Terms of use",
+      "body": "This page is waiting for the final text from the organisation that runs the platform."
+    }
+  },
+  "dash": {
+    "subtitle": "Here is your teaching workspace.",
+    "quick": {
+      "addClass": "Add class",
+      "addResource": "Add resource",
+      "upload": "Upload file",
+      "addLink": "Add link",
+      "askAi": "Ask AI"
+    },
+    "resourceCount": "Resources: {n}",
+    "updated": "Updated {when}",
+    "enter": "Open",
+    "storage": "Storage",
+    "academicYear": "Academic year",
+    "recentResources": "Recent resources",
+    "emptyTitle": "No resources yet",
+    "emptyBody": "Upload your first file or paste your first link and it will show up here.",
+    "aiBody": "Ask for a lesson plan, a quiz or a worksheet. The assistant knows your classes and subjects.",
+    "title": {
+      "male": "",
+      "female": ""
+    },
+    "greet": {
+      "morning": "Good morning, {name}.",
+      "evening": "Good evening, {name}.",
+      "hello": "Hello, {name}."
+    },
+    "summary": "You have {classes} and {resources}.",
+    "classesCount": {
+      "zero": "no classes",
+      "one": "1 class",
+      "two": "{n} classes",
+      "few": "{n} classes",
+      "many": "{n} classes",
+      "other": "{n} classes"
+    },
+    "resourcesCount": {
+      "zero": "no teaching resources",
+      "one": "1 teaching resource",
+      "two": "{n} teaching resources",
+      "few": "{n} teaching resources",
+      "many": "{n} teaching resources",
+      "other": "{n} teaching resources"
+    },
+    "continueWorking": "Continue working",
+    "aiNotes": "Last saved from the assistant"
+  },
+  "classPage": {
+    "sections": "Resource sections",
+    "allResources": "All resources in this class",
+    "emptyTitle": "This class has no resources yet",
+    "emptyBody": "Add the first one, or drag a file from your computer onto a section.",
+    "color": "Notebook colour",
+    "pickGrade": "Choose the grade",
+    "alreadyHave": "added",
+    "customName": "Custom class name",
+    "customNameHint": "Such as \"6B\" or \"Language Club\". Leave empty to use the grade name.",
+    "create": "Add class",
+    "created": "Class added",
+    "listHint": "Each class is a notebook: one subject in one grade.",
+    "chooseSemester": "Choose the semester",
+    "chooseUnit": "Choose the unit.",
+    "unitCount": "Units: {n}",
+    "addUnit": "Add unit",
+    "unitAdded": "Unit added",
+    "renameUnit": "Name this unit",
+    "unitName": "Unit name",
+    "unitNameHint": "Leave empty to keep the name \"{name}\".",
+    "deleteUnit": "Delete unit",
+    "unitDeleted": "Unit deleted",
+    "unitResources": "All resources in this unit"
+  },
+  "section": {
+    "add": "Add section",
+    "name": "Section name",
+    "namePlaceholder": "e.g. Exam files",
+    "icon": "Icon",
+    "cover": "Cover image",
+    "coverChange": "Change cover",
+    "created": "Section created",
+    "dragHint": "Drag any resource onto another section to move it.",
+    "emptyTitle": "Nothing in \"{name}\" yet",
+    "emptyBody": "Add a resource, or drag a file from your computer onto this section.",
+    "addHint": "Add a new kind of resource",
+    "edit": "Edit section",
+    "editNamed": "Edit section {name}",
+    "delete": "Delete section",
+    "deleted": "Section deleted"
+  },
+  "resource": {
+    "favorite": "Add to favorites",
+    "unfavorite": "Remove from favorites",
+    "movedTo": "Moved to \"{name}\"",
+    "moved": "Resource moved",
+    "move": "Move",
+    "moveTitle": "Move it where?",
+    "breadcrumbs": "Breadcrumbs",
+    "uploadedBy": "Added by",
+    "createdAt": "Added",
+    "updatedAt": "Last edited",
+    "size": "Size",
+    "preview": "Preview",
+    "noPreview": "This type cannot be previewed here. Use Open or Download.",
+    "download": "Download",
+    "duplicate": "Duplicate",
+    "duplicated": "Copy created",
+    "share": "Share",
+    "sharePrivate": "This resource is private to you",
+    "shareSoon": "Sharing with your school or with specific teachers is on its way. Until then nobody else can see this resource.",
+    "trashed": "Moved to trash",
+    "saved": "Changes saved",
+    "content": "Content",
+    "askAi": "Ask the assistant about this resource"
+  },
+  "add": {
+    "title": "Title",
+    "description": "Description",
+    "unit": "Unit",
+    "topic": "Topic",
+    "tagsHint": "Separate tags with commas.",
+    "chooseClass": "Choose a class",
+    "chooseHint": "What would you like to add?",
+    "kinds": {
+      "file": "Upload file",
+      "video": "Add video",
+      "link": "Add link",
+      "image": "Add image",
+      "presentation": "Add presentation",
+      "pdf": "Add PDF",
+      "document": "Add document",
+      "external": "External resource"
+    },
+    "fromDevice": "Upload from device",
+    "pasteUrl": "Paste URL",
+    "dropHere": "Drag the file here, or",
+    "urlHint": "YouTube, Canva, Gamma, Google Docs and Slides, Google Drive, or any other site.",
+    "needClass": "Add a class first so your resources have a place.",
+    "save": "Save resource",
+    "saved": "Resource added",
+    "uploading": "Uploading",
+    "toSection": "Add to {name}",
+    "sectionRejects": "The \"{name}\" section does not accept this file type.",
+    "place": "Place",
+    "savedIn": "Will be saved in:",
+    "changePlace": "Change place",
+    "urlHintVideo": "A YouTube link or any other video link.",
+    "urlHintSlides": "Canva, Gamma, Google Slides, or any other link."
+  },
+  "suggest": {
+    "question": "We recognised the file like this. Use this classification?",
+    "approve": "Approve"
+  },
+  "filters": {
+    "title": "Filters",
+    "searchHere": "Search this list",
+    "sort": "Sort by",
+    "sorts": {
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "az": "A–Z",
+      "recent": "Recently used",
+      "manual": "My order"
+    },
+    "type": "Type",
+    "class": "Class",
+    "category": "Section",
+    "subject": "Subject",
+    "year": "Academic year",
+    "tags": "Tags",
+    "date": "Date added",
+    "dates": {
+      "7": "Last 7 days",
+      "30": "Last 30 days",
+      "365": "Last year"
+    },
+    "clear": "Clear filters",
+    "noMatchTitle": "Nothing matches these filters",
+    "noMatchBody": "Change the search words or clear the filters.",
+    "reorderHint": "Drag a card and drop it on another to place it before."
+  },
+  "trash": {
+    "hint": "What you delete stays here until you restore it or delete it permanently.",
+    "empty": "Empty trash",
+    "emptyConfirm": "Permanently delete everything in the trash? (Items: {n})",
+    "confirmTitle": "Delete this resource permanently?",
+    "confirmBody": "Permanent deletion cannot be undone.",
+    "deleteForever": "Delete permanently",
+    "deletedForever": "Deleted permanently",
+    "restore": "Restore",
+    "restored": "Resource restored",
+    "inTrash": "In the trash since {date}.",
+    "emptyTitle": "The trash is empty",
+    "emptyBody": "Deleted resources show up here."
+  },
+  "favorites": {
+    "emptyTitle": "No favorites yet",
+    "emptyBody": "Press the star on any resource and it will show up here."
+  },
+  "recent": {
+    "emptyTitle": "You have not opened any resource yet",
+    "emptyBody": "Resources you open show up here, most recent first."
+  },
+  "search": {
+    "placeholder": "Search all your resources",
+    "hint": "Search by file name, unit, section or subject, such as Unit 3.",
+    "noneTitle": "No results for \"{q}\"",
+    "noneBody": "Try another word or part of the file name.",
+    "resources": "Resources ({n})"
+  },
+  "ai": {
+    "title": "AI assistant",
+    "open": "Open the AI assistant",
+    "newChat": "New chat",
+    "context": "Context:",
+    "clearFile": "Remove the file from context",
+    "greeting": "How can I help today?",
+    "greetingBody": "I know your classes and subjects, and the class you are looking at now.",
+    "examples": {
+      "1": "Write a Grade 6 lesson plan on the Present Perfect.",
+      "2": "Suggest short classroom activities for Grade 4.",
+      "3": "What resources do I have on Unit 3?",
+      "4": "Write a quiz from these materials."
+    },
+    "actions": {
+      "lesson_plan": "Generate lesson plan",
+      "quiz": "Create quiz",
+      "summary": "Summarize",
+      "worksheet": "Create worksheet",
+      "flashcards": "Flashcards",
+      "questions": "Questions",
+      "objectives": "Learning objectives",
+      "activities": "Activities",
+      "presentation_outline": "Presentation outline"
+    },
+    "thinking": "Writing…",
+    "saveAsNote": "Save as note",
+    "copied": "Text copied",
+    "placeholder": "Ask your assistant…",
+    "topicPlaceholder": "{action}: type the topic…",
+    "stop": "Stop",
+    "send": "Send",
+    "disclaimer": "Review what the assistant writes before using it in class.",
+    "saved": "Note saved",
+    "aboutThisFile": "About this file",
+    "mockReply": "**This is a sample reply.** The AI assistant is not switched on for this server yet.\n\nYour request was: \"{request}\"\n\nContext that reached the server: {where}\n\nFiles attached with your consent: {files}\n\nTo get real answers set `AI_PROVIDER=anthropic` and add `ANTHROPIC_API_KEY` in the server settings. You can try \"Save as note\" on this reply.",
+    "useSection": "Use the resources in this section",
+    "useClass": "Use the resources in this class",
+    "useHint": "The assistant reads your notes, PDFs and images here and builds on them. It changes nothing.",
+    "useUnit": "Use the resources in this unit"
+  },
+  "settings": {
+    "profile": "Profile",
+    "appearance": "Language and theme",
+    "sessions": "Logged-in devices",
+    "sessionsHint": "Every device you log in from has its own session. Log out of any you do not recognise.",
+    "thisDevice": "This device",
+    "signOutDevice": "Log out",
+    "signOutOthers": "Log out of all other devices",
+    "security": "Security",
+    "lastActive": "Last active {when}",
+    "remembered": "remembered",
+    "changeEmail": "Change email",
+    "emailFromGoogle": "Your email comes from your Google account. Add a password first to change it.",
+    "currentPassword": "Current password",
+    "newEmail": "New email",
+    "codeSentTo": "We sent a code to",
+    "emailChanged": "Email changed",
+    "noPassword": "Your account logs in with Google and has no password. To add one, use:",
+    "changePassword": "Change password",
+    "passwordChanged": "Password changed, and other sessions were closed",
+    "nationalIdFixed": "Never shown in full and cannot be edited here."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications.",
+    "welcome": "Your space is ready. Start by adding your first resource to one of your classes."
+  },
+  "auth": {
+    "login": "Log in",
+    "loginHint": "Enter your teaching space.",
+    "email": "Email",
+    "emailHint": "We will send a 6-digit verification code to it.",
+    "password": "Password",
+    "passwordHint": "At least 8 characters.",
+    "confirmPassword": "Confirm password",
+    "passwordMismatch": "The two passwords do not match.",
+    "newPassword": "New password",
+    "remember": "Remember me",
+    "rememberHint": "You stay logged in on this device for up to 180 days. Do not use it on a device other people use.",
+    "forgotLink": "Forgot your password?",
+    "noAccount": "No account yet?",
+    "registerLink": "Create one",
+    "haveAccount": "Already have an account?",
+    "or": "or",
+    "googleLogin": "Log in with Google",
+    "googleSignup": "Sign up with Google",
+    "step": "Step {n} of {total}",
+    "codeLabel": "Verification code",
+    "codeDigit": "Digit {n}",
+    "resend": "Resend code",
+    "resendIn": "Resend in {n} s",
+    "codeResent": "We sent a new code.",
+    "backToLogin": "Back to log in",
+    "register": {
+      "title0": "Tell us about you",
+      "hint0": "Three short steps and you are in.",
+      "title1": "Your email and password",
+      "hint1": "They open your space from any device.",
+      "title2": "What do you teach?",
+      "hint2": "Your space is built around your subjects and grades.",
+      "submit": "Create teacher space"
+    },
+    "complete": {
+      "title": "Complete your teaching profile",
+      "hint": "A few details Google does not know. Your account is linked to"
+    },
+    "verify": {
+      "title": "Check your email",
+      "sentTo": "We sent a 6-digit verification code to:",
+      "submit": "Verify",
+      "wrongEmail": "Not your email? Register again"
+    },
+    "reset": {
+      "emailTitle": "Forgot your password?",
+      "emailHint": "Enter your email and we will send a verification code.",
+      "codeTitle": "Enter the code",
+      "codeHint": "If this email has an account, we sent it a 6-digit code that works for 10 minutes.",
+      "passwordTitle": "New password",
+      "passwordHint": "Choose a new password for your account.",
+      "send": "Send verification code",
+      "save": "Change password",
+      "doneTitle": "Password changed.",
+      "doneBody": "You were logged out on every device. Log in with the new password."
+    }
+  },
+  "semesters": {
+    "1": "First semester",
+    "2": "Second semester",
+    "n": "Semester {n}"
+  },
+  "units": {
+    "label": "Unit {n}"
+  },
+  "place": {
+    "course": "Class",
+    "semester": "Semester",
+    "unit": "Unit",
+    "section": "Section",
+    "subject": "Subject",
+    "choose": "Choose"
+  },
+  "profile": {
+    "firstName": "First name",
+    "secondName": "Second name",
+    "thirdName": "Third name",
+    "lastName": "Last name",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "nationalId": "National ID number",
+    "nationalIdHint": "Stored encrypted. Only its last four digits are ever shown afterwards.",
+    "schoolName": "School name",
+    "schoolNameHint": "Type your school's name as you know it. You can change it later in settings.",
+    "subjects": "Subjects you teach",
+    "subjectsSearch": "Search for a subject",
+    "grades": "Grades you teach",
+    "academicYear": "Academic year"
+  }
+}
