@@ -20,13 +20,11 @@ export type AiContext = {
   unitId?: string;
   sectionId?: string;
   resourceId?: string;
-  /** the teacher ticked "use the resources of this section/class": their contents may be read */
   useResources?: boolean;
 };
 
 const ACTION_BRIEFS: Record<AiAction, string> = {
-  lesson_plan:
-    "Write a lesson plan with: title, grade, duration, learning objectives, materials, warm-up, presentation, guided practice, independent practice, assessment, homework, and differentiation notes.",
+  lesson_plan: "Write a lesson plan with: title, grade, duration, learning objectives, materials, warm-up, presentation, guided practice, independent practice, assessment, homework, and differentiation notes.",
   quiz: "Write a quiz of 10 multiple-choice questions with four options each, followed by an answer key.",
   worksheet: "Write a printable student worksheet with clear instructions, 3–4 varied exercises that grow in difficulty, and an answer key at the end.",
   flashcards: "Write 12 flashcards as a two-column table: front (term or question) and back (answer).",
@@ -39,9 +37,9 @@ const ACTION_BRIEFS: Record<AiAction, string> = {
 
 const quota = () => Number(process.env.AI_DAILY_MESSAGE_LIMIT ?? 100);
 
-/** A real provider with its key. The sample-reply provider counts only outside production. */
 export function aiAvailable() {
   const provider = process.env.AI_PROVIDER ?? "mock";
+  if (provider === "openrouter") return !!process.env.OPENROUTER_API_KEY;
   if (provider === "anthropic") return !!process.env.ANTHROPIC_API_KEY;
   return provider === "mock" && !strict;
 }
@@ -65,7 +63,6 @@ const place = (t: ReturnType<typeof createT>, locale: Locale, r: ResourceDTO) =>
 const describe = (t: ReturnType<typeof createT>, locale: Locale, r: ResourceDTO) =>
   `- "${r.title}" (${r.type}; ${place(t, locale, r)}${r.tags.length ? `; tags: ${r.tags.join(", ")}` : ""})`;
 
-/** Everything the assistant should know without the teacher repeating it. */
 async function buildSystem(user: User, ctx: AiContext, lastUserText: string, locale: Locale) {
   const t = createT(locale);
   const mine = await teaching(user.id);
@@ -102,8 +99,6 @@ async function buildSystem(user: User, ctx: AiContext, lastUserText: string, loc
     else if (open.file && !attachable(open)) lines.push("Its content is not readable by you yet (only PDFs and images are). Say so if asked about its content.");
   }
 
-  // With the teacher's consent, the materials of the place they are in become source material:
-  // notes are read as text, PDFs and images are attached, everything else is listed by title.
   const materials: ResourceDTO[] = [];
   if (ctx.useResources && course) {
     const scope = ctx.sectionId && path ? { sectionId: ctx.sectionId } : path ? { unitId: path.unit.id } : { courseId: course.id };
@@ -120,7 +115,6 @@ async function buildSystem(user: User, ctx: AiContext, lastUserText: string, loc
     }
   }
 
-  // Lightweight retrieval: resources matching the words of the question, then the current unit or class.
   const words = lastUserText.split(/\s+/).filter((w) => w.length > 2).slice(0, 8);
   const found = new Map<string, ResourceDTO>();
   for (const q of [lastUserText.match(/(unit|الوحدة)\s*\d+/i)?.[0], ...words]) {
@@ -145,10 +139,6 @@ async function attachment(userId: string, r: ResourceDTO) {
     : { type: "image", source: { type: "base64", media_type: f.mime, data } };
 }
 
-/**
- * Streams the assistant's reply as plain UTF-8 text.
- * Providers: "mock" (no key needed) and "anthropic". Add others behind the same function.
- */
 export async function chatStream(
   user: User,
   input: { messages: ChatMessage[]; context: AiContext; action?: AiAction; locale: Locale },
@@ -176,8 +166,8 @@ export async function chatStream(
     });
   }
 
-  if (provider !== "anthropic") throw new Error(`Unknown AI_PROVIDER "${provider}"`);
-  if (!process.env.ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY is not set");
+  if (provider !== "openrouter") throw new Error(`Unknown AI_PROVIDER "${provider}"`);
+  if (!process.env.OPENROUTER_API_KEY) throw new Error("OPENROUTER_API_KEY is not set");
 
   const apiMessages: { role: string; content: unknown }[] = messages.slice(0, -1).map((m) => ({ role: m.role, content: m.content }));
   const attached = [...(open && attachable(open) ? [open] : []), ...materials];
@@ -188,32 +178,33 @@ export async function chatStream(
       : task,
   });
 
-  const upstream = await fetch("https://api.anthropic.com/v1/messages", {
+  const upstream = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "x-api-key": process.env.ANTHROPIC_API_KEY,
-      "anthropic-version": "2023-06-01",
+      "authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      "http-referer": process.env.APP_URL ?? "https://eduhub.vercel.app",
+      "x-title": "EduHub",
     },
     body: JSON.stringify({
-      model: process.env.AI_MODEL ?? "claude-sonnet-5-5",
+      model: process.env.AI_MODEL ?? "openrouter/free",
       max_tokens: 4096,
-      system,
-      messages: apiMessages,
+      messages: [{ role: "system", content: system }, ...apiMessages],
       stream: true,
     }),
   });
+
   if (!upstream.ok || !upstream.body) {
     console.error("AI provider error", upstream.status, await upstream.text().catch(() => ""));
     throw new Error("AI provider request failed");
   }
 
-  // Server-sent events in, plain text out.
   const reader = upstream.body.getReader();
   const dec = new TextDecoder();
   let buffer = "";
   let inTok = 0;
   let outTok = 0;
+
   return new ReadableStream({
     async pull(controller) {
       const { done, value } = await reader.read();
@@ -222,16 +213,21 @@ export async function chatStream(
         controller.close();
         return;
       }
+
       buffer += dec.decode(value, { stream: true });
       const lines = buffer.split("\n");
       buffer = lines.pop() ?? "";
+
       for (const line of lines) {
         if (!line.startsWith("data:")) continue;
+        if (line.trim() === "data: [DONE]") continue;
+
         try {
           const ev = JSON.parse(line.slice(5));
-          if (ev.type === "content_block_delta" && ev.delta?.type === "text_delta") controller.enqueue(enc.encode(ev.delta.text));
-          else if (ev.type === "message_start") inTok = ev.message?.usage?.input_tokens ?? 0;
-          else if (ev.type === "message_delta") outTok = ev.usage?.output_tokens ?? outTok;
+          const text = ev.choices?.[0]?.delta?.content;
+          if (typeof text === "string") controller.enqueue(enc.encode(text));
+          inTok = ev.usage?.prompt_tokens ?? inTok;
+          outTok = ev.usage?.completion_tokens ?? outTok;
         } catch {
           /* keep-alive or partial line */
         }
