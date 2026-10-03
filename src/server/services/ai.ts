@@ -136,7 +136,7 @@ async function attachment(userId: string, r: ResourceDTO) {
   const data = (await storage().read(f.storageKey)).toString("base64");
   return r.type === "pdf"
     ? { type: "document", source: { type: "base64", media_type: "application/pdf", data } }
-    : { type: "image", source: { type: "base64", media_type: f.mime, data } };
+    : { type: "image_url", image_url: { url: `data:${f.mime};base64,${data}` } };
 }
 
 export async function chatStream(
@@ -190,51 +190,27 @@ export async function chatStream(
       model: process.env.AI_MODEL ?? "openrouter/free",
       max_tokens: 4096,
       messages: [{ role: "system", content: system }, ...apiMessages],
-      stream: true,
+      stream: false,
     }),
   });
 
-  if (!upstream.ok || !upstream.body) {
+  if (!upstream.ok) {
     console.error("AI provider error", upstream.status, await upstream.text().catch(() => ""));
     throw new Error("AI provider request failed");
   }
 
-  const reader = upstream.body.getReader();
-  const dec = new TextDecoder();
-  let buffer = "";
-  let inTok = 0;
-  let outTok = 0;
+  const result = await upstream.json();
+  const answer = result.choices?.[0]?.message?.content ?? "";
+  const inTok = result.usage?.prompt_tokens ?? 0;
+  const outTok = result.usage?.completion_tokens ?? 0;
+
+  await logUsage(user.id, input.action ?? "chat", inTok, outTok);
 
   return new ReadableStream({
-    async pull(controller) {
-      const { done, value } = await reader.read();
-      if (done) {
-        await logUsage(user.id, input.action ?? "chat", inTok, outTok);
-        controller.close();
-        return;
-      }
-
-      buffer += dec.decode(value, { stream: true });
-      const lines = buffer.split("\n");
-      buffer = lines.pop() ?? "";
-
-      for (const line of lines) {
-        if (!line.startsWith("data:")) continue;
-        if (line.trim() === "data: [DONE]") continue;
-
-        try {
-          const ev = JSON.parse(line.slice(5));
-          const text = ev.choices?.[0]?.delta?.content;
-          if (typeof text === "string") controller.enqueue(enc.encode(text));
-          inTok = ev.usage?.prompt_tokens ?? inTok;
-          outTok = ev.usage?.completion_tokens ?? outTok;
-        } catch {
-          /* keep-alive or partial line */
-        }
-      }
-    },
-    cancel() {
-      void reader.cancel();
+    start(controller) {
+      controller.enqueue(enc.encode(answer));
+      controller.close();
     },
   });
+
 }
