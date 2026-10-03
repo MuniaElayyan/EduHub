@@ -1,1 +1,1 @@
-ALTER TABLE users ADD COLUMN IF NOT EXISTS cover_file_id uuid;
+ALTER TABLE "users" ADD COLUMN "cover_file_id" uuid;
