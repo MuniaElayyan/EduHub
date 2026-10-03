@@ -280,7 +280,8 @@ export function publicUser(u: User) {
     id: u.id, email: u.email, role: u.role, status: u.status,
     firstName: u.firstName, secondName: u.secondName, thirdName: u.thirdName, lastName: u.lastName,
     gender: u.gender, schoolName: u.schoolName, academicYear: u.academicYear,
-    avatarFileId: u.avatarFileId, locale: u.locale, theme: u.theme,
+    avatarFileId: u.avatarFileId, coverFileId: u.coverFileId, locale: u.locale, theme: u.theme,
   };
 }
 export type PublicUser = ReturnType<typeof publicUser>;
+
