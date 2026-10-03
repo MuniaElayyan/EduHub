@@ -379,8 +379,7 @@ function ProfileForm() {
           {years.map((y) => <option key={y} value={y}>{y}</option>)}
         </select>
       </Field>
-      <div className="space-y-2">
-        <label className="label">صورة الغلاف</label>
+      <div className="space-y-2"><label className="label">صورة الغلاف</label>{user.coverFileId && <img src={`/api/v1/files/${user.coverFileId}`} alt="" className="h-40 w-full rounded-xl object-cover" />}
         <input
           className="input"
           type="file"
@@ -613,6 +612,7 @@ export function SettingsPanel() {
     </div>
   );
 }
+
 
 
 
