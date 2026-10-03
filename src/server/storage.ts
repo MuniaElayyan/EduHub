@@ -67,17 +67,17 @@ class VercelBlobStorage implements Storage {
 
   async put(key: string, data: Buffer) {
     const { put } = await this.sdk();
-    await put(key, data, { access: "private", addRandomSuffix: false });
+    await put(key, data, { access: "public", addRandomSuffix: false });
   }
   async open(key: string, range?: { start: number; end: number }) {
     const { get } = await this.sdk();
     if (range) {
       // Ask the store for just the range. If it answers with the whole file, or not at all, fall back to the whole file.
-      const part = await get(key, { access: "private", headers: { range: `bytes=${range.start}-${range.end}` } }).catch(() => null);
+      const part = await get(key, { access: "public", headers: { range: `bytes=${range.start}-${range.end}` } }).catch(() => null);
       if (part?.stream && part.headers.get("content-range")) return { body: part.stream, partial: true };
       if (part?.stream) return { body: part.stream, partial: false };
     }
-    const whole = await get(key, { access: "private" });
+    const whole = await get(key, { access: "public" });
     return whole?.stream ? { body: whole.stream, partial: false } : null;
   }
   async head(key: string, bytes: number) {
@@ -85,7 +85,7 @@ class VercelBlobStorage implements Storage {
     try {
       const meta = await head(key);
       // Just uploaded, so read past the cache; take only the first bytes and drop the rest of the stream.
-      const result = await get(key, { access: "private", useCache: false });
+      const result = await get(key, { access: "public", useCache: false });
       if (!result?.stream) return null;
       const reader = result.stream.getReader();
       const chunks: Buffer[] = [];

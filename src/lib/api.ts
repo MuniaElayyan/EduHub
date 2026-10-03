@@ -48,7 +48,7 @@ export async function uploadFile(
     try {
       const { upload } = await import("@vercel/blob/client");
       await upload(start.pathname, file, {
-        access: "private",
+        access: "public",
         handleUploadUrl: "/api/v1/uploads/blob",
         multipart: file.size > 8 * 1024 * 1024,
         onUploadProgress: (e) => opts.onProgress?.(e.percentage / 100),
