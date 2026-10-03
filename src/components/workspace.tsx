@@ -50,11 +50,12 @@ export function useWorkspace() {
 export const displayName = (u: PublicUser) => [u.firstName, u.lastName].filter(Boolean).join(" ");
 
 export function Avatar({ user, className = "size-9" }: { user: PublicUser; className?: string }) {
+  const picture = user.avatarFileId ?? user.coverFileId;
   return (
     <span className={`grid shrink-0 place-items-center overflow-hidden rounded-full bg-brand-soft font-semibold text-brand ${className}`}>
-      {user.avatarFileId
+      {picture
         // eslint-disable-next-line @next/next/no-img-element
-        ? <img src={`/api/v1/files/${user.avatarFileId}`} alt="" className="size-full object-cover" />
+        ? <img src={`/api/v1/files/${picture}`} alt="" className="size-full object-cover" />
         : (user.firstName ?? "?").slice(0, 1)}
     </span>
   );
