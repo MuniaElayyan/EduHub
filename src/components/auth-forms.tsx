@@ -235,7 +235,7 @@ export function RegisterWizard({ reference }: { reference: Reference }) {
     setBusy(true);
     try {
       await api("/auth/register", { body: { ...p, email, password, locale, theme } });
-      window.location.assign("/app");
+      window.location.assign("/cover-profile");
     } catch (err) {
       const code = err instanceof ApiFailure ? err.code : "";
       // Send the teacher back to the step that holds the field in question.
@@ -307,7 +307,7 @@ export function CompleteProfile({ reference, email, firstName, lastName }: { ref
     setBusy(true);
     try {
       await api("/auth/complete-profile", { body: { ...p, locale, theme } });
-      window.location.assign("/app");
+      window.location.assign("/cover-profile");
     } catch (err) {
       if (err instanceof ApiFailure && (err.code === "national_id_taken" || err.code === "invalid_national_id")) setStep(0);
       setError(errorText(t, err));
@@ -351,7 +351,7 @@ export function LoginForm({ google, oauthError }: { google: boolean; oauthError:
     setError(null);
     try {
       await api("/auth/login", { body: { email, password, remember } });
-      window.location.assign("/app");
+      window.location.assign("/cover-profile");
     } catch (err) {
       setError(errorText(t, err));
       setBusy(false);
@@ -492,3 +492,6 @@ export function ForgotPassword() {
     </div>
   );
 }
+
+
+

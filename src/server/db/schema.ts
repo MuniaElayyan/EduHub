@@ -40,6 +40,7 @@ export const users = pgTable(
     schoolName: text("school_name"),
     academicYear: text("academic_year"),
     avatarFileId: uuid("avatar_file_id"),
+    coverFileId: uuid("cover_file_id"),
     locale: text("locale").notNull().default("ar"),
     theme: text("theme").notNull().default("system"),
     storageQuotaBytes: bigint("storage_quota_bytes", { mode: "number" }).notNull(),

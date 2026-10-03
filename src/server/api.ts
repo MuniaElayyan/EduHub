@@ -383,9 +383,17 @@ api.get("/me", auth({ anyStatus: true }), async (c) => {
 api.patch("/me", auth({ anyStatus: true }), async (c) => {
   const body = z
     .object({
-      firstName: trimmed(1, 60), secondName: trimmed(1, 60), thirdName: trimmed(1, 60), lastName: trimmed(1, 60),
-      gender: z.enum(["male", "female"]), schoolName: trimmed(2, 150), academicYear: yearSchema,
-      locale: z.enum(LOCALES), theme: z.enum(THEMES), avatarFileId: uuid.nullable(),
+      firstName: trimmed(1, 60),
+      secondName: trimmed(1, 60),
+      thirdName: trimmed(1, 60),
+      lastName: trimmed(1, 60),
+      gender: z.enum(["male", "female"]),
+      schoolName: trimmed(2, 150),
+      academicYear: yearSchema,
+      locale: z.enum(LOCALES),
+      theme: z.enum(THEMES),
+      avatarFileId: uuid.nullable(),
+      coverFileId: uuid.nullable(),
     })
     .partial()
     .parse(await c.req.json());
@@ -869,4 +877,3 @@ api.post("/ai/chat", auth(), async (c) => {
   }
   return new Response(stream, { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store", "X-Accel-Buffering": "no" } });
 });
-
