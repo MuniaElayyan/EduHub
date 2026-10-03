@@ -18,12 +18,12 @@ phone numbers, sharing between teachers.
 
 ## Registration
 
-Three short steps, then a code:
+Three short steps, and the teacher is in. No email code is asked at registration.
 
 1. Four-part name, gender, national ID.
 2. Email, password, confirm password.
 3. School name (typed by the teacher, stored as typed, editable later), subjects, grades, academic year.
-4. A 6-digit code is emailed. Entering it creates the workspace.
+4. The workspace is created at once.
 
 Language and theme are switches in the page header and are saved with the account.
 
@@ -36,7 +36,7 @@ Language and theme are switches in the page header and are saved with the accoun
 
 ## Email codes
 
-One service issues every code: confirming an email, resetting a password, changing the email.
+One service issues every code. Codes are used for resetting a password and for changing the email address, not for creating an account.
 Six random digits, ten minutes, five wrong tries, single use, a new code cancels the old one,
 60 seconds between sends and five sends an hour. Codes are never shown on screen.
 

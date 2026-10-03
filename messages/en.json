@@ -87,7 +87,6 @@
     "invalid_credentials": "The email or password is not correct.",
     "email_taken": "An account with this email already exists. Log in or reset your password.",
     "unauthenticated": "Your session has ended. Log in again.",
-    "email_not_verified": "Confirm your email address first.",
     "too_many_requests": "Too many attempts in a short time. Wait a little and try again.",
     "file_too_large": "The file is larger than the allowed size.",
     "unsupported_file_type": "This file type is not supported, or the file's content does not match its extension.",
@@ -114,7 +113,12 @@
     "oauth_failed": "Google sign-in did not work. Try again, or log in with your email and password.",
     "ai_not_configured": "The AI assistant is not switched on for this server yet.",
     "storage_not_configured": "File storage is not set up on this server yet. Links work; file uploads are waiting for storage.",
-    "upload_failed": "The file could not be uploaded. Check your connection and try again."
+    "upload_failed": "The file could not be uploaded. Check your connection and try again.",
+    "email_key_invalid": "The email service refused the API key. Check EMAIL_API_KEY in the server settings.",
+    "email_sender_not_verified": "The code was not sent: the domain of the sender address in EMAIL_FROM is not verified with the email provider.",
+    "email_testing_only": "The code was not sent: the email provider account is still in testing mode and only sends to the account owner's address. Verify a domain with the provider.",
+    "email_rejected": "The email provider rejected the message. Check the format of EMAIL_FROM and the recipient address.",
+    "email_unavailable": "The email service could not be reached right now. Use Resend code in a moment."
   },
   "landing": {
     "metaTitle": "The teacher's digital workspace",
@@ -167,7 +171,7 @@
     "how": {
       "1": {
         "title": "Create your account",
-        "body": "Three short steps, then a verification code sent to your email."
+        "body": "Three short steps and you are in your space."
       },
       "2": {
         "title": "Pick your subjects and grades",
@@ -232,7 +236,7 @@
       },
       "codes": {
         "title": "Real verification codes",
-        "body": "Confirming your email, resetting your password and changing your email use a 6-digit code sent to your inbox, valid for minutes and for one use."
+        "body": "Resetting your password and changing your email use a 6-digit code sent to your inbox, valid for minutes and for one use."
       }
     },
     "finalTitle": "Start building your digital teaching space.",
@@ -251,7 +255,7 @@
     },
     "help": {
       "title": "Help",
-      "body": "To start: create an account, then enter the code sent to your email.\n\nTo reach your resources: My classes, then the class, the semester, the unit, and the section.\n\nTo add a resource: open the section and press \"Add\", then choose a file or paste a link.\n\nTo move a resource: drag it to another section on a computer, or open it and choose \"Move\" on a phone."
+      "body": "To start: create an account and you are taken straight to your space.\n\nIf you forget your password: on the log-in page choose \"Forgot your password?\", enter the code sent to your email, and choose a new one.\n\nTo reach your resources: My classes, then the class, the semester, the unit, and the section.\n\nTo add a resource: open the section and press \"Add\", then choose a file or paste a link.\n\nTo move a resource: drag it to another section on a computer, or open it and choose \"Move\" on a phone."
     },
     "privacy": {
       "title": "Privacy policy",
@@ -543,7 +547,7 @@
     "login": "Log in",
     "loginHint": "Enter your teaching space.",
     "email": "Email",
-    "emailHint": "We will send a 6-digit verification code to it.",
+    "emailHint": "You log in with it, and the password reset code is sent to it. Make sure it is typed correctly.",
     "password": "Password",
     "passwordHint": "At least 8 characters.",
     "confirmPassword": "Confirm password",
@@ -579,10 +583,7 @@
       "hint": "A few details Google does not know. Your account is linked to"
     },
     "verify": {
-      "title": "Check your email",
-      "sentTo": "We sent a 6-digit verification code to:",
-      "submit": "Verify",
-      "wrongEmail": "Not your email? Register again"
+      "submit": "Verify"
     },
     "reset": {
       "emailTitle": "Forgot your password?",

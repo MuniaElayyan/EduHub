@@ -14,12 +14,13 @@ import {
   SESSION_COOKIE, sessionCookieOptions, setPassword, verifyPassword, CODE_RESEND_SECONDS, type CodePurpose,
 } from "./auth";
 import { appUrl, googleConfigured, secureCookies, storageUsable } from "./config";
+import { activateAccount, settleLegacy } from "./accounts";
 import { getDb } from "./db";
 import {
   files, notifications, oauthAccounts, passwordResets, rateLimits, sessions, teacherGrades, teacherSubjects, userCredentials, users, verificationCodes,
   type Session, type User,
 } from "./db/schema";
-import { sendCodeEmail, sendNoticeEmail } from "./email";
+import { EmailError, sendCodeEmail, sendNoticeEmail } from "./email";
 import { googleProfile, googleStart, OAUTH_COOKIE, readOAuthCookie } from "./oauth";
 import { rateLimit } from "./ratelimit";
 import { AI_ACTIONS, aiAvailable, chatStream, withinDailyLimit } from "./services/ai";
@@ -88,8 +89,9 @@ const auth = (opts: { anyStatus?: boolean } = {}) =>
     const rotate = () => setCookie(c, SESSION_COOKIE, found.newToken!, sessionCookieOptions(found.session.remember));
     if (found.newToken) rotate();
     if (found.user.status === "suspended") throw new ApiError(403, "account_suspended");
-    if (!opts.anyStatus && found.user.status !== "active") throw new ApiError(403, found.user.status === "pending_email" ? "email_not_verified" : "profile_incomplete");
-    c.set("user", found.user);
+    const user = await settleLegacy(found.user);
+    if (!opts.anyStatus && user.status !== "active") throw new ApiError(403, "profile_incomplete");
+    c.set("user", user);
     c.set("session", found.session);
     await next();
     if (found.newToken && !c.res.headers.getSetCookie().some((v) => v.startsWith(`${SESSION_COOKIE}=`))) rotate();
@@ -148,19 +150,9 @@ async function sendCode(user: Pick<User, "id" | "locale">, purpose: CodePurpose,
   try {
     await sendCodeEmail(to, purpose, issued.code, asLocale(user.locale));
   } catch (err) {
-    console.error(err);
-    throw new ApiError(502, "email_failed");
+    console.error("[email]", err instanceof Error ? err.message : err);
+    throw new ApiError(502, err instanceof EmailError ? `email_${err.reason}` : "email_failed");
   }
-}
-
-/** Email confirmed and profile complete: the account goes live and its classes are created. */
-async function activate(userId: string) {
-  const db = await getDb();
-  const [user] = await db.update(users).set({ status: "active", emailVerifiedAt: new Date(), updatedAt: new Date() }).where(eq(users.id, userId)).returning();
-  const t = await teaching(userId);
-  await buildWorkspace(userId, t.subjects, t.grades, user.academicYear ?? academicYears()[1]);
-  await db.insert(notifications).values({ userId, type: "welcome" });
-  return user;
 }
 
 /**
@@ -188,7 +180,9 @@ api.get("/health", async (c) => {
 /** What the registration screen needs before anyone is signed in. */
 api.get("/reference", async (c) => c.json({ subjects: await listSubjects(), academicYears: academicYears(), google: googleConfigured() }));
 
-/* ── Registration and email confirmation ───────────────────────────── */
+/* ── Registration ──────────────────────────────────────────────────────
+   No email code here: the teacher registers and is in. The address is proven later, the first time a
+   password is reset (the only place a code is emailed, apart from changing the address in settings). */
 
 api.post("/auth/register", async (c) => {
   await limit(`register:${c.get("ip")}`, 10, 60 * MIN);
@@ -197,44 +191,25 @@ api.post("/auth/register", async (c) => {
   const db = await getDb();
 
   const [existing] = await db.select().from(users).where(eq(users.email, body.email));
-  if (existing?.emailVerifiedAt) throw new ApiError(409, "email_taken");
-  // An address that was never confirmed does not belong to anyone yet: the new registration replaces it.
+  if (existing && existing.status !== "pending_email") throw new ApiError(409, "email_taken");
+  // A registration an earlier version left waiting for a code, never completed: the new one replaces it.
   if (existing) await db.delete(users).where(eq(users.id, existing.id));
   if (await nationalIdTaken(body.nationalId)) throw new ApiError(409, "national_id_taken");
 
   const { email, password, nationalId, subjects: subjectCodes, grades, ...profile } = body;
-  const [user] = await db
+  const [created] = await db
     .insert(users)
-    .values({ email, ...profile, status: "pending_email", storageQuotaBytes: Number(process.env.DEFAULT_QUOTA_GB ?? 2) * 1024 ** 3 })
+    .values({ email, ...profile, status: "pending_profile", storageQuotaBytes: Number(process.env.DEFAULT_QUOTA_GB ?? 2) * 1024 ** 3 })
     .returning();
-  await setPassword(user.id, password);
-  await saveNationalId(user.id, nationalId);
-  await db.insert(teacherSubjects).values(subjectCodes.map((subjectCode) => ({ userId: user.id, subjectCode })));
-  await db.insert(teacherGrades).values(grades.map((grade) => ({ userId: user.id, grade })));
+  await setPassword(created.id, password);
+  await saveNationalId(created.id, nationalId);
+  await db.insert(teacherSubjects).values(subjectCodes.map((subjectCode) => ({ userId: created.id, subjectCode })));
+  await db.insert(teacherGrades).values(grades.map((grade) => ({ userId: created.id, grade })));
+  const user = await activateAccount(created.id, false);
 
   await startSession(c, user.id, false);
   await audit({ userId: user.id, action: "auth.register", ip: c.get("ip") });
-  await sendCode(user, "verify_email", user.email);
-  return c.json({ user: publicUser(user), resendIn: CODE_RESEND_SECONDS }, 201);
-});
-
-api.post("/auth/verify-email", auth({ anyStatus: true }), async (c) => {
-  const user = c.get("user");
-  await limit(`verify:${user.id}`, 20, 15 * MIN);
-  const { code } = z.object({ code: codeSchema }).parse(await c.req.json());
-  if (user.status !== "pending_email") return c.json({ user: publicUser(user) });
-  const result = await checkCode(user.id, "verify_email", code);
-  if (!result.ok) throw new ApiError(400, result.reason === "expired" ? "code_expired" : "invalid_code");
-  const active = await activate(user.id);
-  await audit({ userId: user.id, action: "auth.email_verified", ip: c.get("ip") });
-  return c.json({ user: publicUser(active) });
-});
-
-api.post("/auth/resend-code", auth({ anyStatus: true }), async (c) => {
-  const user = c.get("user");
-  if (user.status !== "pending_email") return c.json({ ok: true });
-  await sendCode(user, "verify_email", user.email);
-  return c.json({ ok: true, resendIn: CODE_RESEND_SECONDS });
+  return c.json({ user: publicUser(user) }, 201);
 });
 
 /* ── Sign in, sign out ─────────────────────────────────────────────── */
@@ -255,6 +230,7 @@ api.post("/auth/login", async (c) => {
     throw new ApiError(401, "invalid_credentials");
   }
   if (user.status === "suspended") throw new ApiError(403, "account_suspended");
+  await settleLegacy(user);
   await startSession(c, user.id, body.remember);
   await audit({ userId: user.id, action: "auth.login", meta: { remember: body.remember }, ip: c.get("ip") });
   return c.json({ user: publicUser(user) });
@@ -306,8 +282,9 @@ api.post("/auth/reset/complete", async (c) => {
   deleteCookie(c, SESSION_COOKIE, { path: "/" });
   const db = await getDb();
   let [user] = await db.select().from(users).where(eq(users.id, userId));
-  // The reset code proved the address, so an account that was still waiting for confirmation is confirmed.
-  if (user.status === "pending_email") user = await activate(userId);
+  // The reset code is the proof that the address belongs to this teacher.
+  if (user.status === "pending_email") user = await activateAccount(userId, true);
+  else if (!user.emailVerifiedAt) await db.update(users).set({ emailVerifiedAt: new Date() }).where(eq(users.id, userId));
   await audit({ userId, action: "auth.password_reset", ip: c.get("ip") });
   background(() => sendNoticeEmail(user.email, "password_changed", asLocale(user.locale)));
   return c.json({ ok: true });
@@ -347,11 +324,11 @@ api.get("/auth/oauth/google/callback", async (c) => {
       // Same address, so the same person: link instead of creating a second account.
       user = byEmail;
       if (!byEmail.emailVerifiedAt) {
-        // The address was registered but never confirmed. Whoever typed that password did not prove the address
-        // is theirs, so the password and any sessions go before the Google owner is let in.
+        // Registration does not prove an address. Until it has been proven (by a reset code), whoever typed that
+        // password may not be its owner, so the password and any sessions go before the Google owner is let in.
         await db.delete(userCredentials).where(eq(userCredentials.userId, byEmail.id));
         await revokeSessions(byEmail.id);
-        user = await activate(byEmail.id);
+        user = await activateAccount(byEmail.id, true);
       }
     } else {
       [user] = await db
@@ -384,7 +361,7 @@ api.post("/auth/complete-profile", auth({ anyStatus: true }), async (c) => {
   await db.delete(teacherGrades).where(eq(teacherGrades.userId, user.id));
   await db.insert(teacherSubjects).values(subjectCodes.map((subjectCode) => ({ userId: user.id, subjectCode })));
   await db.insert(teacherGrades).values(grades.map((grade) => ({ userId: user.id, grade })));
-  return c.json({ user: publicUser(await activate(user.id)) });
+  return c.json({ user: publicUser(await activateAccount(user.id, true)) });
 });
 
 /* ── My account ────────────────────────────────────────────────────── */

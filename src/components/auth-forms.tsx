@@ -235,14 +235,12 @@ export function RegisterWizard({ reference }: { reference: Reference }) {
     setBusy(true);
     try {
       await api("/auth/register", { body: { ...p, email, password, locale, theme } });
-      window.location.assign("/verify-email");
+      window.location.assign("/app");
     } catch (err) {
       const code = err instanceof ApiFailure ? err.code : "";
       // Send the teacher back to the step that holds the field in question.
       if (code === "email_taken") setStep(1);
       if (code === "national_id_taken" || code === "invalid_national_id") setStep(0);
-      // The account exists and is signed in; only the email did not go out. The code screen can send it again.
-      if (code === "email_failed") return window.location.assign("/verify-email");
       setError(errorText(t, err));
       setBusy(false);
     }
@@ -334,67 +332,6 @@ export function CompleteProfile({ reference, email, firstName, lastName }: { ref
         </button>
       </div>
     </form>
-  );
-}
-
-/* ── The emailed code ──────────────────────────────────────────────── */
-
-export function VerifyEmail({ maskedEmail }: { maskedEmail: string }) {
-  const { t } = usePrefs();
-  const [code, setCode] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
-  const [left, setLeft] = useCountdown(60);
-
-  async function verify(value = code) {
-    if (value.length !== 6 || busy) return;
-    setBusy(true);
-    setError(null);
-    try {
-      await api("/auth/verify-email", { body: { code: value } });
-      window.location.assign("/app");
-    } catch (err) {
-      setError(errorText(t, err));
-      setCode("");
-      setBusy(false);
-    }
-  }
-
-  async function resend() {
-    setError(null);
-    setNotice(null);
-    try {
-      const res = await api<{ resendIn?: number }>("/auth/resend-code", { body: {} });
-      setLeft(res.resendIn ?? 60);
-      setNotice(t("auth.codeResent"));
-    } catch (err) {
-      const wait = retryAfter(err);
-      if (wait) setLeft(wait);
-      setError(errorText(t, err));
-    }
-  }
-
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold sm:text-3xl">{t("auth.verify.title")}</h1>
-        <p className="mt-2 text-muted">{t("auth.verify.sentTo")}</p>
-        <p dir="ltr" className="mt-1 text-start font-semibold">{maskedEmail}</p>
-      </div>
-      <FormError message={error} />
-      {notice && <p role="status" className="text-sm font-medium text-brand">{notice}</p>}
-      <CodeInput value={code} disabled={busy} onChange={(v) => { setCode(v); if (v.length === 6) void verify(v); }} />
-      <button className="btn btn-primary w-full" disabled={code.length !== 6 || busy} onClick={() => verify()}>{busy && <Spinner />}{t("auth.verify.submit")}</button>
-      <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
-        <button type="button" className="font-semibold text-brand hover:underline disabled:text-muted disabled:no-underline" disabled={left > 0} onClick={resend}>
-          {left > 0 ? t("auth.resendIn", { n: left }) : t("auth.resend")}
-        </button>
-        <button type="button" className="text-muted hover:text-ink" onClick={async () => { await api("/auth/logout", { body: {} }).catch(() => {}); window.location.assign("/register"); }}>
-          {t("auth.verify.wrongEmail")}
-        </button>
-      </div>
-    </div>
   );
 }
 

@@ -16,10 +16,11 @@ npm install
 npm run dev            # http://localhost:3000
 ```
 
-Verification codes are real codes produced by the same code path as production. In development,
-with no email provider configured, the email is printed in the terminal where `npm run dev` runs;
-nothing is ever shown on the web page. To receive them in an inbox, set `EMAIL_PROVIDER`,
-`EMAIL_API_KEY` and `EMAIL_FROM` in `.env.local` (see `.env.example`).
+Creating an account needs no email code: the teacher registers and is in. A six-digit code is emailed
+only when a password is reset (and when the email address is changed in settings). In development, with
+no email provider configured, that email is printed in the terminal where `npm run dev` runs; nothing is
+ever shown on the web page. To receive it in an inbox, set `EMAIL_PROVIDER`, `EMAIL_API_KEY` and
+`EMAIL_FROM` in `.env.local` (see `.env.example`).
 
 The AI assistant answers with a labelled sample reply until `AI_PROVIDER=anthropic` and
 `ANTHROPIC_API_KEY` are set. The Google button appears once `GOOGLE_CLIENT_ID` and

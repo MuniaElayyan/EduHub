@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { asLocale } from "@/lib/i18n";
 import { THEMES, type Locale, type Theme } from "@/lib/constants";
+import { settleLegacy } from "./accounts";
 import { readSession, SESSION_COOKIE } from "./auth";
 import type { User } from "./db/schema";
 
@@ -12,12 +13,12 @@ export const THEME_COOKIE = "eduhub_theme";
 /** The signed-in user for this request, or null. Cached per request. */
 export const getCurrentUser = cache(async () => {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
-  return (await readSession(token))?.user ?? null;
+  const user = (await readSession(token))?.user ?? null;
+  return user ? settleLegacy(user) : null;
 });
 
 /** Where an account belongs right now, given how far it has got. */
-export const homeFor = (user: Pick<User, "status">) =>
-  user.status === "pending_email" ? "/verify-email" : user.status === "pending_profile" ? "/complete-profile" : "/app";
+export const homeFor = (user: Pick<User, "status">) => (user.status === "pending_profile" ? "/complete-profile" : "/app");
 
 /** Gate for the workspace: signed in, email confirmed, profile complete. */
 export async function requireTeacher() {

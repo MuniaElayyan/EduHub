@@ -1,6 +1,6 @@
 import { createHash, createHmac } from "node:crypto";
 import type { Locale } from "@/lib/constants";
-import { strict } from "./config";
+import { strict, testMode } from "./config";
 
 /**
  * Email delivery behind one function. The provider is chosen with EMAIL_PROVIDER and its key comes
@@ -47,7 +47,8 @@ export function signSes(body: string, region: string, accessKeyId: string, secre
 
 const drivers: Record<string, Driver> = {
   resend: (m) =>
-    json("https://api.resend.com/emails", { Authorization: `Bearer ${process.env.EMAIL_API_KEY}` }, {
+    // Always Resend's own address. Only an automated test run may point it at a local stand-in.
+    json(`${(testMode && process.env.EMAIL_TEST_BASE) || "https://api.resend.com"}/emails`, { Authorization: `Bearer ${process.env.EMAIL_API_KEY}` }, {
       from: from(), to: [m.to], subject: m.subject, text: m.text, html: m.html,
     }),
   sendgrid: (m) =>
@@ -76,13 +77,42 @@ const drivers: Record<string, Driver> = {
   },
 };
 
+/** Why a provider refused a message, in terms an operator can act on. */
+export type EmailFailure = "key_invalid" | "sender_not_verified" | "testing_only" | "rejected" | "unavailable";
+
+export class EmailError extends Error {
+  constructor(public reason: EmailFailure, detail: string) {
+    super(detail);
+  }
+}
+
+/** Reads the provider's answer and names the cause. Anything unrecognised is "unavailable". */
+export function classifyEmailFailure(status: number, body: string): EmailFailure {
+  const text = body.toLowerCase();
+  if (/testing emails|own email address|sandbox|pending approval|not been approved/.test(text)) return "testing_only";
+  if (/not verified|verify (a|your) domain|sender (identity|signature)|not a verified|unverified/.test(text)) return "sender_not_verified";
+  if (status === 401 || /api key|unauthori[sz]ed|invalid.*token|authentication/.test(text)) return "key_invalid";
+  if (status === 403) return "sender_not_verified";
+  if (status === 400 || status === 422) return "rejected";
+  return "unavailable";
+}
+
 export async function sendEmail(m: Message) {
   const name = process.env.EMAIL_PROVIDER ?? "console";
   if (name === "console" && strict) throw new Error("The log mailer cannot be used in production");
   const driver = drivers[name];
   if (!driver) throw new Error(`Unknown EMAIL_PROVIDER "${name}"`);
-  const res = await driver(m);
-  if (res && !res.ok) throw new Error(`Email provider ${name} answered ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  let res: Response | void;
+  try {
+    res = await driver(m);
+  } catch (err) {
+    throw new EmailError("unavailable", `Email provider ${name} could not be reached: ${(err as Error).message}`);
+  }
+  if (res && !res.ok) {
+    const body = (await res.text()).slice(0, 400);
+    // The provider's own words go to the server log; the screen gets a short, named reason.
+    throw new EmailError(classifyEmailFailure(res.status, body), `Email provider ${name} answered ${res.status}: ${body}`);
+  }
 }
 
 /* ── Messages ──────────────────────────────────────────────────────── */

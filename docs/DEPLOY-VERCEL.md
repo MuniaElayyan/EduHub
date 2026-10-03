@@ -31,8 +31,8 @@ Never set `EDUHUB_TEST_MODE` on Vercel.
    then add `EMAIL_PROVIDER`, `EMAIL_API_KEY` and `EMAIL_FROM` under Settings → Environment Variables (Production).
 4. **Deploy.** Push to the connected branch, or Redeploy. Environment variables are read at deploy time, so a
    redeploy is needed after changing them.
-5. **Check.** `https://<your-domain>/api/v1/health` answers `{"ok":true}`. Register with a real address and confirm
-   the six-digit code arrives.
+5. **Check.** `https://<your-domain>/api/v1/health` answers `{"ok":true}`. Register, then use "Forgot your password?"
+   with a real address and confirm the six-digit code arrives.
 
 ## How the app behaves on Vercel
 

@@ -87,7 +87,6 @@ const profile = (over = {}) => ({
 });
 const A = new Client();
 const B = new Client();
-const C = new Client();
 const anon = new Client();
 
 console.log("public");
@@ -127,7 +126,7 @@ const call = (client, r) => client.req(r.method, api(r.path.replace(":id", ZERO)
   check(`all ${guarded.length} protected routes answer 401 to a visitor`, open.length === 0, open.join(", "));
   check("a visitor cannot get an upload token", (await anon.post(api("/uploads/blob"), { type: "blob.generate-client-token", payload: { pathname: `${ZERO}/${ZERO}.pdf` } })).status === 401);
   const pages = ["/app", "/app/classes", `/app/classes/${ZERO}`, `/app/classes/${ZERO}/${ZERO}`, `/app/classes/${ZERO}/${ZERO}/${ZERO}`, `/app/classes/${ZERO}/${ZERO}/${ZERO}/${ZERO}`,
-    "/app/resources", "/app/favorites", "/app/recent", "/app/trash", "/app/settings", "/verify-email", "/complete-profile"];
+    "/app/resources", "/app/favorites", "/app/recent", "/app/trash", "/app/settings", "/complete-profile"];
   const shown = [];
   for (const p of pages) {
     const res = await anon.req("GET", p, undefined, { raw: true });
@@ -136,7 +135,7 @@ const call = (client, r) => client.req(r.method, api(r.path.replace(":id", ZERO)
   check(`all ${pages.length} private pages send a visitor to the login page`, shown.length === 0, shown.join(", "));
 }
 
-console.log("registration and the emailed code");
+console.log("registration without an email code");
 {
   check("cross-origin POST refused", (await anon.post(api("/auth/login"), { email: "a@b.co", password: "x" }, { origin: "https://evil.example" })).status === 403);
   check("weak password refused", (await anon.post(api("/auth/register"), { ...profile(), email: emailA, password: "short" })).status === 400);
@@ -145,39 +144,14 @@ console.log("registration and the emailed code");
   check("phone number is not a field", !JSON.stringify(profile()).includes("phone"));
 
   const reg = await A.post(api("/auth/register"), { ...profile(), email: emailA.toUpperCase(), password: "correct horse 9" });
-  check("register", reg.status === 201 && reg.json.user.status === "pending_email" && reg.json.user.schoolName === "مدرسة ذكور طولكرم الثانوية", reg.text);
-  check("the code is never in the response", !/\b\d{6}\b/.test(reg.text.replace(String(stamp), "")) && !reg.text.includes("devLink"));
-  check("not confirmed: no workspace", (await A.get(api("/courses"))).json?.error?.code === "email_not_verified");
-  check("confirmation page shows a masked address", (await A.get("/verify-email")).text.includes(`a***@example.com`));
-
-  const code = await codeFor(emailA);
-  check("a 6-digit code was emailed", /^\d{6}$/.test(code ?? ""));
-  check("wrong code refused", (await A.post(api("/auth/verify-email"), { code: wrong(code) })).json?.error?.code === "invalid_code");
-  const again = await A.post(api("/auth/resend-code"));
-  check("resend is rate limited with a countdown", again.status === 429 && again.json.error.code === "code_cooldown" && again.json.error.retryAfter > 0);
-  const ok = await A.post(api("/auth/verify-email"), { code });
-  check("correct code activates the account", ok.status === 200 && ok.json.user.status === "active", ok.text);
-
+  check("registering makes the account live at once", reg.status === 201 && reg.json.user.status === "active" && reg.json.user.schoolName === "مدرسة ذكور طولكرم الثانوية", reg.text);
+  await sleep(300);
+  check("no email is sent when an account is created", !fs.readFileSync(LOG, "utf8").includes(`email to ${emailA}`));
+  check("the workspace is there straight away", (await A.get(api("/courses"))).json?.courses?.length === 4 && (await A.get("/app")).status === 200);
+  check("the code step of registration no longer exists", (await A.post(api("/auth/verify-email"), { code: "123456" })).status === 404
+    && (await A.post(api("/auth/resend-code"))).status === 404 && (await A.get("/verify-email")).status === 404);
   check("same email refused", (await anon.post(api("/auth/register"), { ...profile({ nationalId: "555555551" }), email: emailA, password: "correct horse 9" })).json?.error?.code === "email_taken");
   check("same national ID refused", (await anon.post(api("/auth/register"), { ...profile(), email: emailC, password: "correct horse 9" })).json?.error?.code === "national_id_taken");
-
-  // Five wrong tries use the code up, and even the right one stops working.
-  await C.post(api("/auth/register"), { ...profile({ nationalId: String(stamp + 7).slice(-9), subjects: ["math"], grades: [4] }), email: emailC, password: "correct horse 9" });
-  const codeC = await codeFor(emailC);
-  let last;
-  for (let i = 0; i < 5; i++) last = await C.post(api("/auth/verify-email"), { code: wrong(codeC) });
-  check("fifth wrong try expires the code", last.json?.error?.code === "code_expired");
-  check("the right code no longer works after that", (await C.post(api("/auth/verify-email"), { code: codeC })).json?.error?.code === "code_expired");
-}
-
-console.log("an account that has not confirmed its email");
-{
-  // C registered but its code was used up: signed in, yet not confirmed.
-  const leaks = [];
-  for (const r of guarded.filter((x) => x.guard === "auth()")) if ((await call(C, r)).status !== 403) leaks.push(`${r.method} ${r.path}`);
-  check("gets 403 from every workspace route", leaks.length === 0, leaks.join(", "));
-  const page = await C.req("GET", "/app", undefined, { raw: true });
-  check("and is sent back to the code screen", page.status === 307 && page.headers.get("location")?.includes("/verify-email"));
 }
 
 console.log("workspace built from the registration");
@@ -282,7 +256,6 @@ console.log("assistant (mock provider)");
 console.log("one teacher cannot touch another's space");
 {
   await B.post(api("/auth/register"), { ...profile({ firstName: "ريم", gender: "female", nationalId: String(stamp + 3).slice(-9), subjects: ["math"], grades: [5] }), email: emailB, password: "another pass 1" });
-  await B.post(api("/auth/verify-email"), { code: await codeFor(emailB) });
   check("second teacher has her own class", (await B.get(api("/courses"))).json.courses.length === 1);
   check("cannot read resource", (await B.get(api(`/resources/${pdf.id}`))).status === 404);
   check("cannot read file", (await B.get(api(`/files/${fileId}`))).status === 404);

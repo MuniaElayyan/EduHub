@@ -36,7 +36,7 @@ notifications, ai_usage, audit_logs
 
 - `users.school_name` is free text. There is no schools table.
 - `users.role` is an enum with one value, `teacher`.
-- `users.status`: `pending_email` → `active`, or `pending_profile` → `active` after a first Google sign-in.
+- `users.status`: a registration is `active` at once; a first Google sign-in is `pending_profile` until the teaching details are filled in. `pending_email` is kept only for accounts created by an earlier version, which become `active` the next time they are seen.
 - A unit's default sections are created the first time the unit is opened, so unused units cost nothing.
 - Trash is `resources.deleted_at`. Permanent deletion works only from the trash and frees the stored
   file once nothing else points to it.
@@ -47,7 +47,8 @@ notifications, ai_usage, audit_logs
 
 **Email codes** (`auth.ts`: `issueCode`, `checkCode`). `crypto.randomInt`, six digits, stored as an HMAC,
 ten minutes, five wrong tries, single use; a new code cancels the old one; 60 seconds between sends,
-five an hour. Used for registration, password reset and email change.
+five an hour. Used for password reset and email change. Registration sends no code and does not prove the
+address: `email_verified_at` is set when a reset code is entered, or by Google.
 
 **Sessions.** A random 256-bit token in an HttpOnly, SameSite=Lax cookie (Secure over https); the
 database keeps its SHA-256. "Remember me" gives a 180-day session and a persistent cookie; without it
@@ -73,7 +74,7 @@ start without a secret, a database, an https URL and a real email provider.
 | Area | Routes |
 | --- | --- |
 | Reference | `GET /reference`, `GET /health` |
-| Registration | `POST /auth/register`, `/auth/verify-email`, `/auth/resend-code` |
+| Registration | `POST /auth/register` |
 | Sign-in | `POST /auth/login`, `/auth/logout`; `GET /auth/oauth/google/start`, `/callback`; `POST /auth/complete-profile` |
 | Reset | `POST /auth/forgot-password`, `/auth/reset/verify-code`, `/auth/reset/complete` |
 | Account | `GET`, `PATCH /me`; `POST /me/password`, `/me/email`, `/me/email/verify`; `GET`, `DELETE /me/sessions`, `DELETE /me/sessions/:id` |
