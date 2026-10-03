@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, FolderPlus, Link2, Pencil, Plus, Sparkles, T
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { api, errorText } from "@/lib/api";
+import { api, errorText, uploadFile } from "@/lib/api";
 import { academicYears } from "@/lib/constants";
 import { deviceLabel, timeAgo } from "@/lib/format";
 import { gradeLabel, semesterLabel, subjectLabel, unitLabel } from "@/lib/i18n";
@@ -348,6 +348,7 @@ function ProfileForm() {
   });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [coverBusy, setCoverBusy] = useState(false);
   const years = [...new Set([...academicYears(), f.academicYear].filter(Boolean))].sort();
 
   return (
@@ -378,6 +379,31 @@ function ProfileForm() {
           {years.map((y) => <option key={y} value={y}>{y}</option>)}
         </select>
       </Field>
+      <div className="space-y-2">
+        <label className="label">صورة الغلاف</label>
+        <input
+          className="input"
+          type="file"
+          accept="image/*"
+          disabled={coverBusy}
+          onChange={async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            setCoverBusy(true);
+            setError(null);
+            try {
+              const stored = await uploadFile(file, { purpose: "image" });
+              await api("/me", { method: "PATCH", body: { coverFileId: stored.id } });
+              await refresh();
+              toast("تم تحديث صورة الغلاف");
+            } catch (err) {
+              setError(errorText(t, err));
+            }
+            setCoverBusy(false);
+            e.currentTarget.value = "";
+          }}
+        />
+      </div>
       <FormError message={error} />
       <button className="btn btn-primary" disabled={busy}>{busy && <Spinner />}{t("common.save")}</button>
     </form>
@@ -587,3 +613,9 @@ export function SettingsPanel() {
     </div>
   );
 }
+
+
+
+
+
+
